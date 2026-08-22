@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vally Fashion - Admin Dashboard</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-body {
+            background-color: var(--subtle-gray);
+            padding-top: 100px;
+            min-height: 100vh;
+        }
+        .admin-container {
+            max-width: 900px;
+            margin: 0 auto 50px;
+            background: #fff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-medium);
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--light-gray);
+            padding-bottom: 20px;
+        }
+        .admin-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--deep-indigo);
+        }
+        .admin-email {
+            font-family: var(--font-accent);
+            font-size: 0.8rem;
+            color: var(--medium-gray);
+        }
+        .btn-logout {
+            background: transparent;
+            border: 1.5px solid var(--light-gray);
+            color: var(--medium-gray);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: var(--font-accent);
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all var(--transition-fast);
+        }
+        .btn-logout:hover {
+            border-color: #ff4d4d;
+            color: #ff4d4d;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        .dashboard-stat-card {
+            background: var(--subtle-gray);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+        }
+        .dashboard-stat-number {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--deep-indigo);
+        }
+        .dashboard-stat-label {
+            font-family: var(--font-accent);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--medium-gray);
+            margin-top: 4px;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        .admin-tab {
+            font-family: var(--font-accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--medium-gray);
+            background: none;
+            border: none;
+            padding: 12px 18px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all var(--transition-fast);
+        }
+        .admin-tab.active {
+            color: var(--gold);
+            border-bottom-color: var(--gold);
+        }
+        .admin-panel { display: none; }
+        .admin-panel.active { display: block; }
+
+        .form-group.file-upload {
+            border: 2px dashed var(--gold);
+            padding: 30px;
+            text-align: center;
+            border-radius: 12px;
+            cursor: pointer;
+            background: rgba(212,160,23,0.05);
+            transition: all var(--transition-fast);
+        }
+        .form-group.file-upload:hover {
+            background: rgba(212,160,23,0.1);
+        }
+        .file-upload input[type="file"] {
+            display: none;
+        }
+        .file-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .item-list {
+            margin-top: 40px;
+        }
+        .admin-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            background: #fff;
+        }
+        .admin-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .admin-item-details {
+            flex: 1;
+        }
+        .admin-item-title {
+            font-weight: bold;
+            color: var(--charcoal);
+        }
+        .admin-item-cat {
+            color: var(--gold);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .admin-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-delete {
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn-delete:hover {
+            background: #e60000;
+        }
+        .btn-toggle-stock {
+            background: var(--subtle-gray);
+            color: var(--charcoal);
+            border: 1px solid var(--light-gray);
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: var(--font-accent);
+            font-weight: 600;
+        }
+        .btn-toggle-stock:hover {
+            border-color: var(--gold);
+        }
+        .stock-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stock-badge.in { background: rgba(46,125,50,0.12); color: #2e7d32; }
+        .stock-badge.out { background: rgba(230,0,0,0.1); color: #e60000; }
+
+        .inquiry-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 18px;
+            border: 1px solid var(--light-gray);
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+        .inquiry-row-main { flex: 1; }
+        .inquiry-name { font-weight: 700; color: var(--charcoal); }
+        .inquiry-meta { font-size: 0.82rem; color: var(--medium-gray); margin: 4px 0 8px; }
+        .inquiry-message { font-size: 0.92rem; color: var(--charcoal); }
+        .inquiry-status-select {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--light-gray);
+            font-family: var(--font-accent);
+            font-size: 0.85rem;
+        }
+
+        .login-screen {
+            max-width: 420px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-medium);
+            text-align: center;
+        }
+        .login-screen i.fa-lock {
+            font-size: 2.2rem;
+            color: var(--gold);
+            margin-bottom: 16px;
+        }
+        .login-screen h2 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            color: var(--deep-indigo);
+            margin-bottom: 8px;
+        }
+        .login-screen p.login-sub {
+            color: var(--medium-gray);
+            font-size: 0.92rem;
+            margin-bottom: 24px;
+        }
+        .login-error {
+            color: #e60000;
+            font-size: 0.85rem;
+            min-height: 20px;
+            margin-top: 6px;
+        }
+        .hidden { display: none !important; }
+        .empty-state { color: var(--medium-gray); text-align: center; padding: 20px 0; }
+    </style>
+</head>
+<body class="admin-body">
+
+    <!-- Navigation -->
+    <nav class="navbar scrolled" style="position: fixed; background: rgba(10, 14, 42, 0.95);">
+        <div class="container">
+            <a href="index.html" class="nav-brand">
+                <img src="vally art.png" alt="Vally Fashion Logo" class="nav-brand-logo">
+                <div class="nav-brand-text">
+                    <span class="nav-brand-name">VALLY FASHION</span>
+                    <span class="nav-brand-sub">Admin Panel</span>
+                </div>
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Back to Site</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- LOGIN SCREEN -->
+        <div class="login-screen" id="login-screen">
+            <i class="fas fa-lock"></i>
+            <h2>Admin Access</h2>
+            <p class="login-sub">Log in with your admin account to manage the product gallery and customer inquiries.</p>
+            <form id="login-form" novalidate>
+                <div class="form-group" style="text-align:left;">
+                    <label for="admin-email">Email</label>
+                    <input type="email" id="admin-email" required placeholder="admin@vallyfashion.com" autocomplete="username">
+                </div>
+                <div class="form-group" style="text-align:left;">
+                    <label for="admin-password">Password</label>
+                    <input type="password" id="admin-password" required placeholder="Enter password" autocomplete="current-password">
+                </div>
+                <div class="login-error" id="login-error" role="alert"></div>
+                <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;">
+                    <i class="fas fa-sign-in-alt"></i> <span id="login-btn-text">Log In</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- DASHBOARD (hidden until login) -->
+        <div class="admin-container hidden" id="dashboard">
+            <div class="admin-header">
+                <div>
+                    <h2 class="admin-title">Dashboard</h2>
+                    <div class="admin-email" id="admin-email-display"></div>
+                </div>
+                <button class="btn-logout" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+            </div>
+
+            <div class="dashboard-stats" id="dashboard-stats">
+                <div class="dashboard-stat-card">
+                    <div class="dashboard-stat-number" id="stat-total">–</div>
+                    <div class="dashboard-stat-label">Total Items</div>
+                </div>
+                <div class="dashboard-stat-card">
+                    <div class="dashboard-stat-number" id="stat-womens">–</div>
+                    <div class="dashboard-stat-label">Women's Wear</div>
+                </div>
+                <div class="dashboard-stat-card">
+                    <div class="dashboard-stat-number" id="stat-mens">–</div>
+                    <div class="dashboard-stat-label">Men's Wear</div>
+                </div>
+                <div class="dashboard-stat-card">
+                    <div class="dashboard-stat-number" id="stat-inquiries">–</div>
+                    <div class="dashboard-stat-label">New Inquiries</div>
+                </div>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="products">Products</button>
+                <button class="admin-tab" data-tab="inquiries">Customer Inquiries</button>
+            </div>
+
+            <!-- PRODUCTS PANEL -->
+            <div class="admin-panel active" id="panel-products">
+                <h3 style="font-family: var(--font-display); margin-bottom: 20px; color: var(--charcoal);">Upload New Design</h3>
+
+                <form id="upload-form">
+                    <div class="form-group file-upload" id="drop-zone">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--gold); margin-bottom: 10px;"></i>
+                        <p style="font-family: var(--font-accent); font-weight: 600;">Click to select an image</p>
+                        <input type="file" id="design-image" accept="image/*" required>
+                        <img id="image-preview" class="file-preview" src="" alt="Preview">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="design-title">Design Title</label>
+                            <input type="text" id="design-title" required placeholder="e.g. Royal Ankara Gown">
+                        </div>
+                        <div class="form-group">
+                            <label for="design-category">Category</label>
+                            <select id="design-category" required>
+                                <option value="womens">Women's Wear</option>
+                                <option value="mens">Men's Wear</option>
+                                <option value="accessories">Accessories</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="design-description">Description (optional)</label>
+                        <textarea id="design-description" placeholder="Short description customers will see, e.g. fabric, fit, occasion"></textarea>
+                    </div>
+
+                    <div class="form-status" id="upload-status" role="status" aria-live="polite"></div>
+
+                    <button type="submit" class="btn-primary" id="upload-submit-btn" style="width: 100%; justify-content: center; margin-top: 15px;">
+                        <i class="fas fa-plus"></i> <span>Add Design to Gallery</span>
+                    </button>
+                </form>
+                
+                <div class="item-list">
+                    <h3 style="font-family: var(--font-display); margin-bottom: 20px; color: var(--charcoal);">Manage Products</h3>
+                    <div id="products-container">
+                        <p class="empty-state">Loading products…</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INQUIRIES PANEL -->
+            <div class="admin-panel" id="panel-inquiries">
+                <h3 style="font-family: var(--font-display); margin-bottom: 20px; color: var(--charcoal);">Customer Inquiries</h3>
+                <div id="inquiries-container">
+                    <p class="empty-state">Loading inquiries…</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        const API_BASE_URL = (typeof VALLY_CONFIG !== 'undefined' && VALLY_CONFIG.API_BASE_URL) || 'http://localhost:4000';
+        const TOKEN_KEY = 'vally_admin_token';
+        const EMAIL_KEY = 'vally_admin_email';
+
+        const loginScreen = document.getElementById('login-screen');
+        const dashboard = document.getElementById('dashboard');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const loginBtnText = document.getElementById('login-btn-text');
+        const logoutBtn = document.getElementById('logout-btn');
+        const adminEmailDisplay = document.getElementById('admin-email-display');
+
+        function getToken() {
+            try { return sessionStorage.getItem(TOKEN_KEY); } catch (e) { return null; }
+        }
+
+        function setSession(token, email) {
+            try {
+                sessionStorage.setItem(TOKEN_KEY, token);
+                sessionStorage.setItem(EMAIL_KEY, email);
+            } catch (e) { console.warn('Could not persist session:', e); }
+        }
+
+        function clearSession() {
+            try {
+                sessionStorage.removeItem(TOKEN_KEY);
+                sessionStorage.removeItem(EMAIL_KEY);
+            } catch (e) { /* ignore */ }
+        }
+
+        // Wrapper around fetch that attaches the auth header and handles 401s uniformly
+        async function authFetch(path, options = {}) {
+            const token = getToken();
+            const headers = options.headers || {};
+            headers['Authorization'] = `Bearer ${token}`;
+
+            const res = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
+
+            if (res.status === 401) {
+                clearSession();
+                showLogin();
+                throw new Error('Session expired. Please log in again.');
+            }
+            return res;
+        }
+
+        function showDashboard() {
+            loginScreen.classList.add('hidden');
+            dashboard.classList.remove('hidden');
+            const email = (() => { try { return sessionStorage.getItem(EMAIL_KEY); } catch (e) { return ''; } })();
+            adminEmailDisplay.textContent = email || '';
+            loadProducts();
+            loadInquiries();
+        }
+
+        function showLogin() {
+            dashboard.classList.add('hidden');
+            loginScreen.classList.remove('hidden');
+        }
+
+        if (getToken()) {
+            showDashboard();
+        }
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('admin-email').value.trim();
+            const password = document.getElementById('admin-password').value;
+
+            loginError.textContent = '';
+            loginBtnText.textContent = 'Logging in…';
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    loginError.textContent = data.error || 'Login failed. Please try again.';
+                    return;
+                }
+
+                setSession(data.token, data.admin.email);
+                loginForm.reset();
+                showDashboard();
+            } catch (err) {
+                console.error(err);
+                loginError.textContent = 'Could not reach the server. Is the backend running?';
+            } finally {
+                loginBtnText.textContent = 'Log In';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            clearSession();
+            showLogin();
+        });
+
+        /* ---------- Tabs ---------- */
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(`panel-${tab.dataset.tab}`).classList.add('active');
+            });
+        });
+
+        /* ---------- Product upload ---------- */
+        const uploadForm = document.getElementById('upload-form');
+        const fileInput = document.getElementById('design-image');
+        const imagePreview = document.getElementById('image-preview');
+        const dropZone = document.getElementById('drop-zone');
+        const productsContainer = document.getElementById('products-container');
+        const uploadStatus = document.getElementById('upload-status');
+        const uploadSubmitBtn = document.getElementById('upload-submit-btn');
+
+        let selectedFile = null;
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function updateStats(products, newInquiryCount) {
+            const counts = { womens: 0, mens: 0, accessories: 0 };
+            products.forEach(p => { if (counts[p.category] !== undefined) counts[p.category]++; });
+            document.getElementById('stat-total').textContent = products.length;
+            document.getElementById('stat-womens').textContent = counts.womens;
+            document.getElementById('stat-mens').textContent = counts.mens;
+            document.getElementById('stat-inquiries').textContent = newInquiryCount;
+        }
+
+        async function loadProducts() {
+            try {
+                const res = await authFetch('/api/products');
+                const data = await res.json();
+                renderProducts(data.products || []);
+                updateStats(data.products || [], document.getElementById('stat-inquiries').textContent);
+            } catch (err) {
+                console.error(err);
+                productsContainer.innerHTML = `<p class="empty-state">Could not load products: ${err.message}</p>`;
+            }
+        }
+
+        function renderProducts(products) {
+            productsContainer.innerHTML = '';
+
+            if (products.length === 0) {
+                productsContainer.innerHTML = '<p class="empty-state">No products yet. Add your first design above.</p>';
+                return;
+            }
+
+            products.forEach(p => {
+                const imgSrc = p.image_url.startsWith('http') ? p.image_url : `${API_BASE_URL}${p.image_url}`;
+                const div = document.createElement('div');
+                div.className = 'admin-item';
+                div.innerHTML = `
+                    <img src="${imgSrc}" alt="${p.title}">
+                    <div class="admin-item-details">
+                        <div class="admin-item-title">${p.title}</div>
+                        <div class="admin-item-cat">${p.category}</div>
+                    </div>
+                    <span class="stock-badge ${p.in_stock ? 'in' : 'out'}">${p.in_stock ? 'In Stock' : 'Sold Out'}</span>
+                    <div class="admin-item-actions">
+                        <button class="btn-toggle-stock" data-id="${p.id}" data-stock="${p.in_stock}">
+                            ${p.in_stock ? 'Mark Sold Out' : 'Mark In Stock'}
+                        </button>
+                        <button class="btn-delete" data-id="${p.id}"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                productsContainer.appendChild(div);
+            });
+
+            productsContainer.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', () => deleteProduct(btn.dataset.id));
+            });
+            productsContainer.querySelectorAll('.btn-toggle-stock').forEach(btn => {
+                btn.addEventListener('click', () => toggleStock(btn.dataset.id, btn.dataset.stock === '1'));
+            });
+        }
+
+        async function toggleStock(id, currentlyInStock) {
+            try {
+                const body = new URLSearchParams({ in_stock: (!currentlyInStock).toString() });
+                await authFetch(`/api/products/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body
+                });
+                loadProducts();
+            } catch (err) {
+                console.error(err);
+                alert('Could not update stock status: ' + err.message);
+            }
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('Remove this product from the site? This cannot be undone.')) return;
+            try {
+                await authFetch(`/api/products/${id}`, { method: 'DELETE' });
+                loadProducts();
+            } catch (err) {
+                console.error(err);
+                alert('Could not delete product: ' + err.message);
+            }
+        }
+
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!selectedFile) {
+                uploadStatus.textContent = 'Please select an image first.';
+                uploadStatus.style.color = '#e60000';
+                return;
+            }
+
+            const title = document.getElementById('design-title').value.trim();
+            const category = document.getElementById('design-category').value;
+            const description = document.getElementById('design-description').value.trim();
+
+            if (!title) {
+                uploadStatus.textContent = 'Please enter a design title.';
+                uploadStatus.style.color = '#e60000';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('category', category);
+            formData.append('description', description);
+            formData.append('image', selectedFile);
+
+            uploadSubmitBtn.disabled = true;
+            uploadStatus.textContent = 'Uploading…';
+            uploadStatus.style.color = 'var(--medium-gray)';
+
+            try {
+                const res = await authFetch('/api/products', { method: 'POST', body: formData });
+                const data = await res.json();
+
+                if (!res.ok) throw new Error(data.error || 'Upload failed.');
+
+                uploadStatus.textContent = 'Design uploaded successfully! It is now live on the homepage.';
+                uploadStatus.style.color = '#2e7d32';
+
+                uploadForm.reset();
+                imagePreview.style.display = 'none';
+                selectedFile = null;
+                loadProducts();
+            } catch (err) {
+                console.error(err);
+                uploadStatus.textContent = err.message;
+                uploadStatus.style.color = '#e60000';
+            } finally {
+                uploadSubmitBtn.disabled = false;
+            }
+        });
+
+        /* ---------- Inquiries ---------- */
+        const inquiriesContainer = document.getElementById('inquiries-container');
+
+        async function loadInquiries() {
+            try {
+                const res = await authFetch('/api/inquiries');
+                const data = await res.json();
+                renderInquiries(data.inquiries || []);
+                const newCount = (data.inquiries || []).filter(i => i.status === 'new').length;
+                document.getElementById('stat-inquiries').textContent = newCount;
+            } catch (err) {
+                console.error(err);
+                inquiriesContainer.innerHTML = `<p class="empty-state">Could not load inquiries: ${err.message}</p>`;
+            }
+        }
+
+        function renderInquiries(inquiries) {
+            inquiriesContainer.innerHTML = '';
+
+            if (inquiries.length === 0) {
+                inquiriesContainer.innerHTML = '<p class="empty-state">No customer inquiries yet.</p>';
+                return;
+            }
+
+            inquiries.forEach(inq => {
+                const div = document.createElement('div');
+                div.className = 'inquiry-row';
+                const productLabel = inq.product_title ? ` about <strong>${inq.product_title}</strong>` : '';
+                div.innerHTML = `
+                    <div class="inquiry-row-main">
+                        <div class="inquiry-name">${inq.name}${productLabel}</div>
+                        <div class="inquiry-meta">${inq.email}${inq.phone ? ' · ' + inq.phone : ''} · ${new Date(inq.created_at).toLocaleString()}</div>
+                        <div class="inquiry-message">${inq.message}</div>
+                    </div>
+                    <select class="inquiry-status-select" data-id="${inq.id}">
+                        <option value="new" ${inq.status === 'new' ? 'selected' : ''}>New</option>
+                        <option value="contacted" ${inq.status === 'contacted' ? 'selected' : ''}>Contacted</option>
+                        <option value="closed" ${inq.status === 'closed' ? 'selected' : ''}>Closed</option>
+                    </select>
+                `;
+                inquiriesContainer.appendChild(div);
+            });
+
+            inquiriesContainer.querySelectorAll('.inquiry-status-select').forEach(select => {
+                select.addEventListener('change', () => updateInquiryStatus(select.dataset.id, select.value));
+            });
+        }
+
+        async function updateInquiryStatus(id, status) {
+            try {
+                const body = new URLSearchParams({ status });
+                await authFetch(`/api/inquiries/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body
+                });
+                loadInquiries();
+            } catch (err) {
+                console.error(err);
+                alert('Could not update inquiry status: ' + err.message);
+            }
+        }
+    </script>
+</body>
+</html>

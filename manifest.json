@@ -1,0 +1,21 @@
+{
+  "name": "Vally Fashion Cultural Center",
+  "short_name": "Vally Fashion",
+  "description": "Premium African fashion, traditional clothing, cultural art, and jewelry in Yaoundé, Cameroon.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0a0e2a",
+  "theme_color": "#0a0e2a",
+  "icons": [
+    {
+      "src": "vally art.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "vally art.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
