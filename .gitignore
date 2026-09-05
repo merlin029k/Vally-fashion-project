@@ -1,0 +1,17 @@
+# Backend
+backend/node_modules/
+backend/.env
+backend/db/vally.db
+backend/db/vally.db-journal
+backend/db/vally.db-wal
+backend/db/vally.db-shm
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# General
+*.log
+.DS_Store
+
+# Raw product photos not yet uploaded through the admin dashboard
+# (not served by the site directly — see frontend/config.js + admin.html)
+/unused-product-photos/

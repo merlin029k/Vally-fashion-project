@@ -1,0 +1,9 @@
+node_modules/
+.env
+db/vally.db
+db/vally.db-journal
+db/vally.db-wal
+db/vally.db-shm
+uploads/*
+!uploads/.gitkeep
+*.log
