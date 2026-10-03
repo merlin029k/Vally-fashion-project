@@ -330,6 +330,46 @@ select:focus-visible,
   color: var(--deep-indigo);
 }
 
+/* Admin Login Button (navbar) */
+.nav-admin-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: rgba(255,255,255,0.65);
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.25);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.nav-admin-btn:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+/* Admin Login Avatar (founder photo in login modals) */
+.admin-login-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  margin: 0 auto 14px;
+  overflow: hidden;
+  border: 3px solid var(--gold);
+  box-shadow: var(--shadow-gold);
+}
+
+.admin-login-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
 /* Mobile Menu Toggle */
 .nav-toggle {
   display: none;
@@ -691,8 +731,7 @@ select:focus-visible,
 .about-images {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  grid-template-columns: 1fr;
 }
 
 .about-img-wrapper {
@@ -702,8 +741,7 @@ select:focus-visible,
 }
 
 .about-img-wrapper:nth-child(1) {
-  grid-row: span 2;
-  height: 100%;
+  aspect-ratio: 4 / 5;
 }
 
 .about-img-wrapper img {
@@ -715,6 +753,35 @@ select:focus-visible,
 
 .about-img-wrapper:hover img {
   transform: scale(1.05);
+}
+
+.about-founder-caption {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+  background: rgba(10,14,42,0.75);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 10px;
+}
+
+.about-founder-caption strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.about-founder-caption span {
+  display: block;
+  font-family: var(--font-accent);
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-top: 2px;
 }
 
 .about-accent-box {
@@ -797,6 +864,200 @@ select:focus-visible,
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--charcoal);
+}
+
+/* ---------- Heritage / Vision, Mission & Values Section ---------- */
+.heritage-pillars {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+.pillar-card {
+  background: var(--cream);
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+  transition: all var(--transition-medium);
+  border: 1px solid transparent;
+}
+
+.pillar-card:hover {
+  border-color: rgba(212,160,23,0.3);
+  box-shadow: var(--shadow-gold);
+  transform: translateY(-4px);
+}
+
+.pillar-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(212,160,23,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  margin: 0 auto 20px;
+}
+
+.pillar-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--charcoal);
+  margin-bottom: 14px;
+}
+
+.pillar-text {
+  font-size: 0.98rem;
+  color: var(--medium-gray);
+  line-height: 1.8;
+}
+
+.heritage-tagline {
+  text-align: center;
+  padding: 36px 20px;
+  margin-bottom: 50px;
+  border-top: var(--border-gold);
+  border-bottom: var(--border-gold);
+}
+
+.heritage-slogan {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+  color: var(--deep-indigo);
+  margin-bottom: 10px;
+}
+
+.heritage-motto {
+  font-family: var(--font-accent);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.value-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px 26px;
+  box-shadow: var(--shadow-soft);
+  transition: all var(--transition-medium);
+  border: 1px solid var(--light-gray);
+}
+
+.value-card:hover {
+  border-color: rgba(212,160,23,0.3);
+  box-shadow: var(--shadow-gold);
+  transform: translateY(-3px);
+}
+
+.value-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(212,160,23,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  margin-bottom: 16px;
+}
+
+.value-title {
+  font-family: var(--font-accent);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--charcoal);
+  margin-bottom: 8px;
+}
+
+.value-text {
+  font-size: 0.92rem;
+  color: var(--medium-gray);
+  line-height: 1.7;
+}
+
+/* ---------- Locations Section ---------- */
+.locations-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.location-card {
+  position: relative;
+  background: #fff;
+  border-radius: 16px;
+  padding: 34px 24px;
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+  transition: all var(--transition-medium);
+  border: 1px solid transparent;
+}
+
+.location-card:hover {
+  border-color: rgba(212,160,23,0.3);
+  box-shadow: var(--shadow-gold);
+  transform: translateY(-4px);
+}
+
+.location-card.coming-soon {
+  background: var(--subtle-gray);
+  border: 1px dashed var(--light-gray);
+}
+
+.location-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-family: var(--font-accent);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.location-badge.hq { background: rgba(10,14,42,0.08); color: var(--deep-indigo); }
+.location-badge.open { background: rgba(46,125,50,0.12); color: #2e7d32; }
+.location-badge.soon { background: rgba(212,160,23,0.15); color: var(--gold); }
+
+.location-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(212,160,23,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin: 10px auto 18px;
+}
+
+.location-name {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--charcoal);
+  margin-bottom: 10px;
+}
+
+.location-detail {
+  font-size: 0.9rem;
+  color: var(--medium-gray);
+  line-height: 1.7;
 }
 
 /* ---------- Categories Section ---------- */
@@ -1333,6 +1594,23 @@ select:focus-visible,
   to { opacity: 1; transform: translateY(0); }
 }
 
+.testimonial-avatar {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  overflow: hidden;
+  border: 3px solid var(--gold);
+  box-shadow: var(--shadow-gold);
+}
+
+.testimonial-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
 .testimonial-quote {
   font-family: var(--font-display);
   font-size: 1.5rem;
@@ -1857,6 +2135,14 @@ select:focus-visible,
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .values-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .locations-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .gallery-grid {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -1897,6 +2183,21 @@ select:focus-visible,
   .categories-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
+  }
+
+  .heritage-pillars {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .values-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .locations-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .gallery-grid {

@@ -3,93 +3,36 @@
  * Run with: npm run seed
  *
  * Creates the first admin account (from .env) if none exists yet,
- * and inserts a few sample products so the gallery isn't empty on
- * first run. Safe to re-run — it won't duplicate the admin account.
+ * and inserts the starter product catalog (from db/seed-images/) so
+ * the gallery isn't empty on first run. Safe to re-run — it won't
+ * duplicate the admin account or re-insert products that already exist.
+ *
+ * Runs on every boot (see render.yaml's startCommand). On a host without
+ * a persistent disk, the SQLite file and /uploads folder are wiped on
+ * each restart, so this script re-copies the seed images and re-inserts
+ * the starter catalog every time — the gallery is never empty, even
+ * though anything uploaded through the admin dashboard since the last
+ * restart will be gone. Images added here (db/seed-images/) are
+ * committed to git and therefore always survive restarts/redeploys.
  */
 
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
-const zlib = require('zlib');
 const bcrypt = require('bcryptjs');
 const db = require('./index');
 
 const UPLOAD_DIR = path.join(__dirname, '..', 'uploads');
+const SEED_IMAGES_DIR = path.join(__dirname, 'seed-images');
 
-// ---- Minimal solid-color PNG encoder (no external deps) ----
-// Only used to generate placeholder images for the sample products below,
-// so a fresh `npm run seed` doesn't leave the gallery pointing at missing files.
-const CRC_TABLE = (() => {
-  const table = new Uint32Array(256);
-  for (let n = 0; n < 256; n++) {
-    let c = n;
-    for (let k = 0; k < 8; k++) {
-      c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
-    }
-    table[n] = c >>> 0;
-  }
-  return table;
-})();
-
-function crc32(buf) {
-  let crc = 0xFFFFFFFF;
-  for (let i = 0; i < buf.length; i++) {
-    crc = CRC_TABLE[(crc ^ buf[i]) & 0xFF] ^ (crc >>> 8);
-  }
-  return (crc ^ 0xFFFFFFFF) >>> 0;
-}
-
-function pngChunk(type, data) {
-  const typeBuf = Buffer.from(type, 'ascii');
-  const lenBuf = Buffer.alloc(4);
-  lenBuf.writeUInt32BE(data.length, 0);
-  const crcBuf = Buffer.alloc(4);
-  crcBuf.writeUInt32BE(crc32(Buffer.concat([typeBuf, data])), 0);
-  return Buffer.concat([lenBuf, typeBuf, data, crcBuf]);
-}
-
-function writeSolidPng(filePath, width, height, [r, g, b]) {
-  const ihdr = Buffer.alloc(13);
-  ihdr.writeUInt32BE(width, 0);
-  ihdr.writeUInt32BE(height, 4);
-  ihdr[8] = 8;  // bit depth
-  ihdr[9] = 2;  // color type: truecolor RGB
-  ihdr[10] = 0; // compression method
-  ihdr[11] = 0; // filter method
-  ihdr[12] = 0; // interlace method
-
-  const row = Buffer.alloc(1 + width * 3); // leading filter-type byte (0 = none)
-  for (let x = 0; x < width; x++) {
-    row[1 + x * 3] = r;
-    row[1 + x * 3 + 1] = g;
-    row[1 + x * 3 + 2] = b;
-  }
-  const raw = Buffer.concat(Array(height).fill(row));
-  const idatData = zlib.deflateSync(raw);
-
-  const signature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
-  const png = Buffer.concat([
-    signature,
-    pngChunk('IHDR', ihdr),
-    pngChunk('IDAT', idatData),
-    pngChunk('IEND', Buffer.alloc(0))
-  ]);
-
-  fs.writeFileSync(filePath, png);
-}
-
-function ensurePlaceholderImages() {
+function copySeedImages() {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-  const placeholders = {
-    'placeholder-womens.png': [176, 141, 87],    // gold
-    'placeholder-mens.png': [58, 66, 102],       // deep indigo
-    'placeholder-accessories.png': [122, 47, 47] // deep red
-  };
-  for (const [name, color] of Object.entries(placeholders)) {
-    const filePath = path.join(UPLOAD_DIR, name);
-    if (!fs.existsSync(filePath)) {
-      writeSolidPng(filePath, 600, 600, color);
-      console.log(`Generated placeholder image: ${name}`);
+  if (!fs.existsSync(SEED_IMAGES_DIR)) return;
+
+  for (const file of fs.readdirSync(SEED_IMAGES_DIR)) {
+    const dest = path.join(UPLOAD_DIR, file);
+    if (!fs.existsSync(dest)) {
+      fs.copyFileSync(path.join(SEED_IMAGES_DIR, file), dest);
     }
   }
 }
@@ -116,7 +59,7 @@ function seedAdmin() {
 }
 
 function seedProducts() {
-  ensurePlaceholderImages();
+  copySeedImages();
 
   const count = db.prepare('SELECT COUNT(*) AS n FROM products').get().n;
   if (count > 0) {
@@ -125,9 +68,14 @@ function seedProducts() {
   }
 
   const sample = [
-    { title: 'Traditional Royal Dress', description: 'Hand-embroidered ceremonial dress with gold thread detailing.', category: 'womens', image_url: '/uploads/placeholder-womens.png' },
-    { title: 'Premium Agbada', description: 'Full-length flowing robe in premium woven fabric.', category: 'mens', image_url: '/uploads/placeholder-mens.png' },
-    { title: 'Handcrafted Bead Necklace', description: 'Traditional beadwork necklace, handmade by local artisans.', category: 'accessories', image_url: '/uploads/placeholder-accessories.png' }
+    { title: 'Royal Ankara Gown', description: 'Statement womenswear piece in bold traditional print.', category: 'womens', image_url: '/uploads/seed-womens-1.jpg' },
+    { title: 'Beaded Ceremonial Dress', description: 'Fitted ceremonial dress with hand-finished beadwork detailing.', category: 'womens', image_url: '/uploads/seed-womens-2.png' },
+    { title: 'Heritage Agbada Robe', description: 'Flowing hand-embroidered robe, styled with a traditional headwrap.', category: 'mens', image_url: '/uploads/seed-mens-1.png' },
+    { title: 'Royal Blue Dashiki', description: 'Hand-embroidered dashiki tunic in royal blue with intricate white stitching.', category: 'mens', image_url: '/uploads/seed-mens-2.png' },
+    { title: 'Leopard Print Agbada Set', description: 'Statement two-piece set styled with traditional accents.', category: 'mens', image_url: '/uploads/seed-mens-3.png' },
+    { title: 'Tribal Statement Necklace', description: 'Handcrafted statement necklace made from natural materials.', category: 'accessories', image_url: '/uploads/seed-accessories-1.png' },
+    { title: 'Beaded Twist Necklace Set', description: 'Vibrant handmade beaded necklaces, sold as a pair.', category: 'accessories', image_url: '/uploads/seed-accessories-2.png' },
+    { title: 'Carved Pendant Necklace', description: 'Traditional carved wooden pendant necklace with beaded accents.', category: 'accessories', image_url: '/uploads/seed-accessories-3.png' }
   ];
 
   const insert = db.prepare(`
@@ -146,7 +94,7 @@ function seedProducts() {
     throw err;
   }
 
-  console.log(`Inserted ${sample.length} sample products.`);
+  console.log(`Inserted ${sample.length} starter products.`);
 }
 
 seedAdmin();

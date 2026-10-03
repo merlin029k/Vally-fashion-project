@@ -341,6 +341,101 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = '';
     }
 
+    /* ---------- Admin Login (homepage quick-access) ---------- */
+    const adminLoginOpenBtn = document.getElementById('admin-login-open');
+    const adminLoginModal = document.getElementById('admin-login-modal');
+    const adminLoginClose = document.getElementById('admin-login-close');
+    const adminLoginForm = document.getElementById('admin-login-form');
+    const adminLoginStatus = document.getElementById('admin-login-status');
+    const adminLoginSubmit = document.getElementById('admin-login-submit');
+    const footerAdminLoginLink = document.getElementById('footer-admin-login');
+
+    const ADMIN_TOKEN_KEY = 'vally_admin_token';
+    const ADMIN_EMAIL_KEY = 'vally_admin_email';
+
+    function openAdminLoginModal() {
+        if (!adminLoginModal) return;
+        if (adminLoginStatus) adminLoginStatus.textContent = '';
+        adminLoginModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        const firstInput = adminLoginForm ? adminLoginForm.querySelector('input') : null;
+        if (firstInput) firstInput.focus();
+    }
+
+    function closeAdminLoginModal() {
+        if (!adminLoginModal) return;
+        adminLoginModal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    if (adminLoginOpenBtn) {
+        adminLoginOpenBtn.addEventListener('click', openAdminLoginModal);
+    }
+
+    if (footerAdminLoginLink) {
+        footerAdminLoginLink.addEventListener('click', (e) => {
+            // Already logged in this session? Skip the modal and go straight to the dashboard.
+            let hasToken = false;
+            try { hasToken = !!sessionStorage.getItem(ADMIN_TOKEN_KEY); } catch (err) { /* ignore */ }
+            if (hasToken) return; // let the default navigation to admin.html happen
+            e.preventDefault();
+            openAdminLoginModal();
+        });
+    }
+
+    if (adminLoginClose) adminLoginClose.addEventListener('click', closeAdminLoginModal);
+    if (adminLoginModal) {
+        adminLoginModal.addEventListener('click', (e) => {
+            if (e.target === adminLoginModal) closeAdminLoginModal();
+        });
+    }
+
+    if (adminLoginForm) {
+        adminLoginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('admin-login-email').value.trim();
+            const password = document.getElementById('admin-login-password').value;
+
+            if (adminLoginStatus) {
+                adminLoginStatus.style.color = 'var(--medium-gray)';
+                adminLoginStatus.textContent = 'Logging in…';
+            }
+            if (adminLoginSubmit) adminLoginSubmit.disabled = true;
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+
+                if (!res.ok) throw new Error(data.error || 'Login failed. Please try again.');
+
+                try {
+                    sessionStorage.setItem(ADMIN_TOKEN_KEY, data.token);
+                    sessionStorage.setItem(ADMIN_EMAIL_KEY, data.admin.email);
+                } catch (err) { /* sessionStorage unavailable — login still succeeded */ }
+
+                if (adminLoginStatus) {
+                    adminLoginStatus.style.color = '#2e7d32';
+                    adminLoginStatus.textContent = 'Welcome back! Taking you to the dashboard…';
+                }
+                adminLoginForm.reset();
+                setTimeout(() => { window.location.href = 'admin.html'; }, 600);
+            } catch (err) {
+                console.error('Admin login failed:', err);
+                if (adminLoginStatus) {
+                    adminLoginStatus.style.color = '#e60000';
+                    adminLoginStatus.textContent = err.message || 'Could not reach the server.';
+                }
+            } finally {
+                if (adminLoginSubmit) adminLoginSubmit.disabled = false;
+            }
+        });
+    }
+
     if (inquiryClose) inquiryClose.addEventListener('click', closeInquiryModal);
     if (inquiryModal) {
         inquiryModal.addEventListener('click', (e) => {

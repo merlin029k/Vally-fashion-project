@@ -14,6 +14,7 @@
     en: {
       nav_home: 'Home',
       nav_about: 'About',
+      nav_heritage: 'Heritage',
       nav_collections: 'Collections',
       nav_training: 'Training',
       nav_contact: 'Contact',
@@ -28,6 +29,7 @@
     fr: {
       nav_home: 'Accueil',
       nav_about: 'À propos',
+      nav_heritage: 'Héritage',
       nav_collections: 'Collections',
       nav_training: 'Formation',
       nav_contact: 'Contact',
