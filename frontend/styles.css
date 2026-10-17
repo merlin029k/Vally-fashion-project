@@ -89,6 +89,13 @@ img {
   max-width: 100%;
   height: auto;
   display: block;
+  /* Deter casual right-click/drag saving and iOS long-press "Save Image".
+     This cannot block real screenshots or browser dev tools — see main.js. */
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 a {
@@ -328,46 +335,6 @@ select:focus-visible,
 .lang-toggle:hover {
   background: var(--gold);
   color: var(--deep-indigo);
-}
-
-/* Admin Login Button (navbar) */
-.nav-admin-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  color: rgba(255,255,255,0.65);
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.25);
-  cursor: pointer;
-  font-size: 0.85rem;
-  transition: all var(--transition-fast);
-  flex-shrink: 0;
-}
-
-.nav-admin-btn:hover {
-  color: var(--gold);
-  border-color: var(--gold);
-}
-
-/* Admin Login Avatar (founder photo in login modals) */
-.admin-login-avatar {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  margin: 0 auto 14px;
-  overflow: hidden;
-  border: 3px solid var(--gold);
-  box-shadow: var(--shadow-gold);
-}
-
-.admin-login-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center;
 }
 
 /* Mobile Menu Toggle */
@@ -1278,98 +1245,6 @@ select:focus-visible,
   text-transform: uppercase;
 }
 
-.gallery-item-inquire {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 6px;
-  font-family: var(--font-accent);
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--gold-light);
-  background: transparent;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: color var(--transition-fast);
-}
-
-.gallery-item-inquire:hover {
-  color: #fff;
-  text-decoration: underline;
-}
-
-/* ---------- Inquiry Modal ---------- */
-.inquiry-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 9998;
-  background: rgba(10,14,42,0.85);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transition: all var(--transition-medium);
-  padding: 20px;
-}
-
-.inquiry-modal.active {
-  opacity: 1;
-  visibility: visible;
-}
-
-.inquiry-modal-content {
-  background: #fff;
-  border-radius: 20px;
-  padding: 40px;
-  max-width: 460px;
-  width: 100%;
-  position: relative;
-  box-shadow: var(--shadow-heavy);
-  transform: scale(0.95);
-  transition: transform var(--transition-medium);
-}
-
-.inquiry-modal.active .inquiry-modal-content {
-  transform: scale(1);
-}
-
-.inquiry-modal-content h3 {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  color: var(--charcoal);
-  margin-bottom: 6px;
-}
-
-.inquiry-product-name {
-  font-family: var(--font-accent);
-  font-size: 0.85rem;
-  color: var(--gold);
-  font-weight: 600;
-  margin-bottom: 20px;
-}
-
-.inquiry-close {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: var(--subtle-gray);
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  cursor: pointer;
-  color: var(--medium-gray);
-  font-size: 1rem;
-  transition: all var(--transition-fast);
-}
-
-.inquiry-close:hover {
-  background: var(--gold);
-  color: #fff;
-}
-
 .gallery-item-zoom {
   position: absolute;
   top: 50%;
@@ -1672,9 +1547,9 @@ select:focus-visible,
 /* ---------- Contact Section ---------- */
 .contact-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 50px;
-  align-items: start;
+  grid-template-columns: 1fr;
+  max-width: 640px;
+  margin: 0 auto;
 }
 
 .contact-info-cards {
@@ -1733,97 +1608,6 @@ select:focus-visible,
   font-size: 0.85rem;
   color: var(--medium-gray);
   margin-top: 2px;
-}
-
-.contact-form {
-  background: #fff;
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: var(--shadow-medium);
-}
-
-.contact-form h3 {
-  font-family: var(--font-display);
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--charcoal);
-  margin-bottom: 24px;
-}
-
-.form-group {
-  margin-bottom: 18px;
-}
-
-.form-group label {
-  display: block;
-  font-family: var(--font-accent);
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--charcoal);
-  margin-bottom: 6px;
-  letter-spacing: 0.5px;
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-  width: 100%;
-  padding: 14px 18px;
-  border: 1.5px solid var(--light-gray);
-  border-radius: 12px;
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  color: var(--charcoal);
-  transition: all var(--transition-fast);
-  background: var(--subtle-gray);
-}
-
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: var(--gold);
-  background: #fff;
-  box-shadow: 0 0 0 4px rgba(212,160,23,0.1);
-}
-
-.form-group textarea {
-  resize: vertical;
-  min-height: 120px;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.form-submit {
-  width: 100%;
-  margin-top: 8px;
-}
-
-/* Form validation error text */
-.form-error {
-  display: block;
-  min-height: 18px;
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  color: #e60000;
-  margin-top: 4px;
-}
-
-.form-group input[aria-invalid="true"],
-.form-group textarea[aria-invalid="true"] {
-  border-color: #e60000;
-}
-
-.form-status {
-  font-family: var(--font-accent);
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-bottom: 12px;
-  min-height: 20px;
 }
 
 /* ---------- Social Strip ---------- */
@@ -2125,8 +1909,7 @@ select:focus-visible,
 /* ---------- Responsive Design ---------- */
 @media (max-width: 1024px) {
   .about-grid,
-  .training-grid,
-  .contact-grid {
+  .training-grid {
     grid-template-columns: 1fr;
     gap: 40px;
   }
@@ -2218,10 +2001,6 @@ select:focus-visible,
     flex-direction: column;
     gap: 12px;
     text-align: center;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
   }
 
   .about-accent-box {

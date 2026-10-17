@@ -95,9 +95,6 @@
                 <a href="#contact" data-i18n="nav_contact">Contact</a>
                 <a href="#contact" class="nav-cta" data-i18n="nav_visit">Visit Us</a>
                 <button class="lang-toggle" id="lang-toggle" type="button" aria-label="Switch language">EN / FR</button>
-                <button class="nav-admin-btn" id="admin-login-open" type="button" aria-label="Admin login" title="Admin login">
-                    <i class="fas fa-user-shield"></i>
-                </button>
             </div>
             
             <button class="nav-toggle" id="nav-toggle" aria-label="Toggle Navigation">
@@ -604,48 +601,6 @@
                         </div>
                     </div>
                 </div>
-                
-                <div class="contact-form reveal">
-                    <h3>Send us a Message</h3>
-                    <form id="contact-form" novalidate>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="name">Full Name</label>
-                                <input type="text" id="name" name="name" required placeholder="John Doe" aria-describedby="name-error">
-                                <span class="form-error" id="name-error" role="alert"></span>
-                            </div>
-                            <div class="form-group">
-                                <label for="phone">Phone Number</label>
-                                <input type="tel" id="phone" name="phone" placeholder="+237..." aria-describedby="phone-error">
-                                <span class="form-error" id="phone-error" role="alert"></span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" name="email" required placeholder="john@example.com" aria-describedby="email-error">
-                            <span class="form-error" id="email-error" role="alert"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="subject">Subject</label>
-                            <select id="subject" name="subject">
-                                <option>Inquire about a product</option>
-                                <option>Fashion Training Registration</option>
-                                <option>Custom Tailoring</option>
-                                <option>Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Your Message</label>
-                            <textarea id="message" name="message" required placeholder="How can we help you?" aria-describedby="message-error"></textarea>
-                            <span class="form-error" id="message-error" role="alert"></span>
-                        </div>
-                        <div class="form-status" id="form-status" role="status" aria-live="polite"></div>
-                        <button type="submit" class="btn-primary form-submit">
-                            <span>Send Message</span>
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </form>
-                </div>
             </div>
         </div>
     </section>
@@ -706,7 +661,6 @@
             <div class="footer-bottom">
                 <p>&copy; 2026 Vally Fashion Cultural Center. All rights reserved.</p>
                 <div class="footer-bottom-links">
-                    <a href="admin.html" id="footer-admin-login">Admin Login</a>
                     <a href="#">Privacy Policy</a>
                     <a href="#">Terms of Service</a>
                 </div>
@@ -720,60 +674,6 @@
         <span>Chat on WhatsApp</span>
     </a>
 
-    <!-- Product Inquiry Modal -->
-    <div class="inquiry-modal" id="inquiry-modal" role="dialog" aria-modal="true" aria-label="Ask about this product">
-        <div class="inquiry-modal-content">
-            <button type="button" class="inquiry-close" id="inquiry-close" aria-label="Close inquiry form"><i class="fas fa-times"></i></button>
-            <h3>Ask About This Piece</h3>
-            <p class="inquiry-product-name" id="inquiry-product-label"></p>
-            <form id="inquiry-form" novalidate>
-                <input type="hidden" id="inquiry-product-id">
-                <div class="form-group">
-                    <label for="inquiry-name">Full Name</label>
-                    <input type="text" id="inquiry-name" required placeholder="Your name">
-                </div>
-                <div class="form-group">
-                    <label for="inquiry-email">Email Address</label>
-                    <input type="email" id="inquiry-email" required placeholder="you@example.com">
-                </div>
-                <div class="form-group">
-                    <label for="inquiry-message">Your Question</label>
-                    <textarea id="inquiry-message" required placeholder="Is this available? What sizes do you have?"></textarea>
-                </div>
-                <div class="form-status" id="inquiry-status" role="status" aria-live="polite"></div>
-                <button type="submit" class="btn-primary form-submit">
-                    <span>Send Inquiry</span>
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Admin Login Modal -->
-    <div class="inquiry-modal" id="admin-login-modal" role="dialog" aria-modal="true" aria-label="Admin login">
-        <div class="inquiry-modal-content">
-            <button type="button" class="inquiry-close" id="admin-login-close" aria-label="Close admin login"><i class="fas fa-times"></i></button>
-            <div class="admin-login-avatar"><img src="ceo2.jpeg" alt="Valantine Eselesung Fule, Founder"></div>
-            <h3>Admin Login</h3>
-            <p class="inquiry-product-name">Staff access to manage products and inquiries.</p>
-            <form id="admin-login-form" novalidate>
-                <div class="form-group">
-                    <label for="admin-login-email">Email</label>
-                    <input type="email" id="admin-login-email" required placeholder="admin@vallyfashion.com" autocomplete="username">
-                </div>
-                <div class="form-group">
-                    <label for="admin-login-password">Password</label>
-                    <input type="password" id="admin-login-password" required placeholder="Enter password" autocomplete="current-password">
-                </div>
-                <div class="form-status" id="admin-login-status" role="status" aria-live="polite"></div>
-                <button type="submit" class="btn-primary form-submit" id="admin-login-submit">
-                    <span>Log In</span>
-                    <i class="fas fa-sign-in-alt"></i>
-                </button>
-            </form>
-        </div>
-    </div>
-
     <!-- Lightbox for images -->
     <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
         <div class="lightbox-close" id="lightbox-close" role="button" tabindex="0" aria-label="Close image viewer"><i class="fas fa-times"></i></div>
@@ -783,7 +683,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="config.js"></script>
     <script src="i18n.js"></script>
     <script src="forms.js"></script>
     <script src="testimonials.js"></script>

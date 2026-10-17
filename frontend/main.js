@@ -1,4 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
+    /* ---------- Basic image protection ----------
+       Deters casual right-click/drag saving. This is a soft deterrent only —
+       no website can block OS/browser screenshots, and a determined visitor
+       can always open dev tools. Paired with the user-select/drag CSS on img. */
+    document.addEventListener('contextmenu', (e) => {
+        if (e.target.tagName === 'IMG') e.preventDefault();
+    });
+    document.addEventListener('dragstart', (e) => {
+        if (e.target.tagName === 'IMG') e.preventDefault();
+    });
+
     /* ---------- Preloader ---------- */
     const preloader = document.getElementById('preloader');
 
@@ -80,14 +91,24 @@ document.addEventListener('DOMContentLoaded', () => {
     revealOnScroll();
     window.addEventListener('scroll', revealOnScroll);
 
-    /* ---------- Gallery Population & Filtering ---------- */
+    /* ---------- Gallery Population & Filtering ----------
+       Static catalog — this is a frontend-only site with no backend/database.
+       To add, edit, or remove a product, update this list and redeploy. */
     const galleryGrid = document.getElementById('gallery-grid');
     const filterBtns = document.querySelectorAll('.gallery-filter-btn');
     const loadMoreBtn = document.getElementById('load-more-btn');
 
-    const API_BASE_URL = (typeof VALLY_CONFIG !== 'undefined' && VALLY_CONFIG.API_BASE_URL) || 'http://localhost:4000';
+    const PRODUCTS = [
+        { id: 1, src: 'products/womens-1.jpg', category: 'womens', title: 'Royal Ankara Gown', description: 'Statement womenswear piece in bold traditional print.' },
+        { id: 2, src: 'products/womens-2.png', category: 'womens', title: 'Beaded Ceremonial Dress', description: 'Fitted ceremonial dress with hand-finished beadwork detailing.' },
+        { id: 3, src: 'products/mens-1.png', category: 'mens', title: 'Heritage Agbada Robe', description: 'Flowing hand-embroidered robe, styled with a traditional headwrap.' },
+        { id: 4, src: 'products/mens-2.png', category: 'mens', title: 'Royal Blue Dashiki', description: 'Hand-embroidered dashiki tunic in royal blue with intricate white stitching.' },
+        { id: 5, src: 'products/mens-3.png', category: 'mens', title: 'Leopard Print Agbada Set', description: 'Statement two-piece set styled with traditional accents.' },
+        { id: 6, src: 'products/accessories-1.png', category: 'accessories', title: 'Tribal Statement Necklace', description: 'Handcrafted statement necklace made from natural materials.' },
+        { id: 7, src: 'products/accessories-2.png', category: 'accessories', title: 'Beaded Twist Necklace Set', description: 'Vibrant handmade beaded necklaces, sold as a pair.' },
+        { id: 8, src: 'products/accessories-3.png', category: 'accessories', title: 'Carved Pendant Necklace', description: 'Traditional carved wooden pendant necklace with beaded accents.' }
+    ];
 
-    let allGalleryItems = [];
     let currentFilter = 'all';
     let itemsToShow = 8;
 
@@ -96,48 +117,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return formats[cat] || cat;
     };
 
-    // Maps a backend product record to the shape the gallery renderer expects
-    const mapProduct = (p) => ({
-        id: p.id,
-        src: p.image_url.startsWith('http') ? p.image_url : `${API_BASE_URL}${p.image_url}`,
-        category: p.category,
-        title: p.title,
-        description: p.description || ''
-    });
-
-    async function loadGalleryFromApi() {
-        if (!galleryGrid) return;
-
-        try {
-            const res = await fetch(`${API_BASE_URL}/api/products?in_stock=true`);
-            if (!res.ok) throw new Error(`API responded with status ${res.status}`);
-
-            const data = await res.json();
-            allGalleryItems = (data.products || []).map(mapProduct);
-        } catch (err) {
-            console.error('Could not load products from the API:', err);
-            galleryGrid.innerHTML = `
-                <p style="grid-column: 1 / -1; text-align:center; color: var(--medium-gray);">
-                    We couldn't load the latest collection right now. Please refresh the page,
-                    or contact us directly on WhatsApp in the meantime.
-                </p>
-            `;
-            if (loadMoreBtn) loadMoreBtn.style.display = 'none';
-            return;
-        }
-
-        renderGallery();
-    }
-
-
     const renderGallery = () => {
         if (!galleryGrid) return;
 
         galleryGrid.innerHTML = '';
 
         const filteredItems = currentFilter === 'all'
-            ? allGalleryItems
-            : allGalleryItems.filter(item => item.category === currentFilter);
+            ? PRODUCTS
+            : PRODUCTS.filter(item => item.category === currentFilter);
 
         const itemsToRender = filteredItems.slice(0, itemsToShow);
 
@@ -152,13 +139,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const galleryHtml = `
                 <div class="gallery-item" data-category="${item.category}" data-product-id="${item.id}" style="transition-delay: ${delay}ms" tabindex="0" role="button" aria-label="View ${item.title}">
-                    <img src="${item.src}" alt="${item.title}" loading="lazy" onerror="this.onerror=null;this.src='vally art.png'">
+                    <img src="${item.src}" alt="${item.title}" loading="lazy" draggable="false" onerror="this.onerror=null;this.src='vally art.png'">
                     <div class="gallery-item-overlay">
                         <div class="gallery-item-cat">${formatCategory(item.category)}</div>
                         <h3 class="gallery-item-title">${item.title}</h3>
-                        <button type="button" class="gallery-item-inquire" data-inquire-id="${item.id}" data-inquire-title="${item.title}">
-                            <i class="fas fa-comment-dots"></i> Ask about this piece
-                        </button>
                     </div>
                     <div class="gallery-item-zoom">
                         <i class="fas fa-search-plus"></i>
@@ -168,8 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             galleryGrid.insertAdjacentHTML('beforeend', galleryHtml);
         });
-
-        attachInquireListeners();
 
         setTimeout(() => {
             const items = document.querySelectorAll('.gallery-item');
@@ -188,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         attachLightboxListeners();
     };
 
-    loadGalleryFromApi();
+    renderGallery();
 
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -304,187 +286,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Escape') closeLightbox();
             if (e.key === 'ArrowRight') nextImage();
             if (e.key === 'ArrowLeft') prevImage();
-        });
-    }
-
-    /* ---------- Product Inquiry Modal ---------- */
-    const inquiryModal = document.getElementById('inquiry-modal');
-    const inquiryForm = document.getElementById('inquiry-form');
-    const inquiryProductLabel = document.getElementById('inquiry-product-label');
-    const inquiryProductIdInput = document.getElementById('inquiry-product-id');
-    const inquiryClose = document.getElementById('inquiry-close');
-    const inquiryStatus = document.getElementById('inquiry-status');
-
-    function attachInquireListeners() {
-        document.querySelectorAll('[data-inquire-id]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation(); // don't also trigger the lightbox
-                openInquiryModal(btn.dataset.inquireId, btn.dataset.inquireTitle);
-            });
-        });
-    }
-
-    function openInquiryModal(productId, productTitle) {
-        if (!inquiryModal) return;
-        if (inquiryProductLabel) inquiryProductLabel.textContent = productTitle || '';
-        if (inquiryProductIdInput) inquiryProductIdInput.value = productId || '';
-        if (inquiryStatus) inquiryStatus.textContent = '';
-        inquiryModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        const firstInput = inquiryForm ? inquiryForm.querySelector('input, textarea') : null;
-        if (firstInput) firstInput.focus();
-    }
-
-    function closeInquiryModal() {
-        if (!inquiryModal) return;
-        inquiryModal.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-
-    /* ---------- Admin Login (homepage quick-access) ---------- */
-    const adminLoginOpenBtn = document.getElementById('admin-login-open');
-    const adminLoginModal = document.getElementById('admin-login-modal');
-    const adminLoginClose = document.getElementById('admin-login-close');
-    const adminLoginForm = document.getElementById('admin-login-form');
-    const adminLoginStatus = document.getElementById('admin-login-status');
-    const adminLoginSubmit = document.getElementById('admin-login-submit');
-    const footerAdminLoginLink = document.getElementById('footer-admin-login');
-
-    const ADMIN_TOKEN_KEY = 'vally_admin_token';
-    const ADMIN_EMAIL_KEY = 'vally_admin_email';
-
-    function openAdminLoginModal() {
-        if (!adminLoginModal) return;
-        if (adminLoginStatus) adminLoginStatus.textContent = '';
-        adminLoginModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        const firstInput = adminLoginForm ? adminLoginForm.querySelector('input') : null;
-        if (firstInput) firstInput.focus();
-    }
-
-    function closeAdminLoginModal() {
-        if (!adminLoginModal) return;
-        adminLoginModal.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-
-    if (adminLoginOpenBtn) {
-        adminLoginOpenBtn.addEventListener('click', openAdminLoginModal);
-    }
-
-    if (footerAdminLoginLink) {
-        footerAdminLoginLink.addEventListener('click', (e) => {
-            // Already logged in this session? Skip the modal and go straight to the dashboard.
-            let hasToken = false;
-            try { hasToken = !!sessionStorage.getItem(ADMIN_TOKEN_KEY); } catch (err) { /* ignore */ }
-            if (hasToken) return; // let the default navigation to admin.html happen
-            e.preventDefault();
-            openAdminLoginModal();
-        });
-    }
-
-    if (adminLoginClose) adminLoginClose.addEventListener('click', closeAdminLoginModal);
-    if (adminLoginModal) {
-        adminLoginModal.addEventListener('click', (e) => {
-            if (e.target === adminLoginModal) closeAdminLoginModal();
-        });
-    }
-
-    if (adminLoginForm) {
-        adminLoginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const email = document.getElementById('admin-login-email').value.trim();
-            const password = document.getElementById('admin-login-password').value;
-
-            if (adminLoginStatus) {
-                adminLoginStatus.style.color = 'var(--medium-gray)';
-                adminLoginStatus.textContent = 'Logging in…';
-            }
-            if (adminLoginSubmit) adminLoginSubmit.disabled = true;
-
-            try {
-                const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                const data = await res.json();
-
-                if (!res.ok) throw new Error(data.error || 'Login failed. Please try again.');
-
-                try {
-                    sessionStorage.setItem(ADMIN_TOKEN_KEY, data.token);
-                    sessionStorage.setItem(ADMIN_EMAIL_KEY, data.admin.email);
-                } catch (err) { /* sessionStorage unavailable — login still succeeded */ }
-
-                if (adminLoginStatus) {
-                    adminLoginStatus.style.color = '#2e7d32';
-                    adminLoginStatus.textContent = 'Welcome back! Taking you to the dashboard…';
-                }
-                adminLoginForm.reset();
-                setTimeout(() => { window.location.href = 'admin.html'; }, 600);
-            } catch (err) {
-                console.error('Admin login failed:', err);
-                if (adminLoginStatus) {
-                    adminLoginStatus.style.color = '#e60000';
-                    adminLoginStatus.textContent = err.message || 'Could not reach the server.';
-                }
-            } finally {
-                if (adminLoginSubmit) adminLoginSubmit.disabled = false;
-            }
-        });
-    }
-
-    if (inquiryClose) inquiryClose.addEventListener('click', closeInquiryModal);
-    if (inquiryModal) {
-        inquiryModal.addEventListener('click', (e) => {
-            if (e.target === inquiryModal) closeInquiryModal();
-        });
-    }
-
-    if (inquiryForm) {
-        inquiryForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const name = inquiryForm.querySelector('#inquiry-name').value.trim();
-            const email = inquiryForm.querySelector('#inquiry-email').value.trim();
-            const message = inquiryForm.querySelector('#inquiry-message').value.trim();
-            const productId = inquiryProductIdInput ? inquiryProductIdInput.value : null;
-
-            if (!name || !email || !message) {
-                if (inquiryStatus) {
-                    inquiryStatus.textContent = 'Please fill in all fields.';
-                    inquiryStatus.style.color = '#e60000';
-                }
-                return;
-            }
-
-            try {
-                const res = await fetch(`${API_BASE_URL}/api/inquiries`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ product_id: productId || undefined, name, email, message })
-                });
-
-                if (!res.ok) {
-                    const errData = await res.json().catch(() => ({}));
-                    throw new Error(errData.error || 'Something went wrong.');
-                }
-
-                if (inquiryStatus) {
-                    inquiryStatus.textContent = 'Thank you! We will get back to you within 24 hours.';
-                    inquiryStatus.style.color = '#2e7d32';
-                }
-                inquiryForm.reset();
-                setTimeout(closeInquiryModal, 2000);
-            } catch (err) {
-                console.error('Inquiry submission failed:', err);
-                if (inquiryStatus) {
-                    inquiryStatus.textContent = "Could not send your inquiry — please try WhatsApp instead.";
-                    inquiryStatus.style.color = '#e60000';
-                }
-            }
         });
     }
 });
