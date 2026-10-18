@@ -288,4 +288,60 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'ArrowLeft') prevImage();
         });
     }
+
+    /* ---------- Reservation Form (submits straight to WhatsApp) ----------
+       No backend: builds a pre-filled WhatsApp message and hands off to
+       wa.me. Update WHATSAPP_NUMBER if the reservation line ever changes. */
+    const WHATSAPP_NUMBER = '237675344245';
+    const reserveOpenBtn = document.getElementById('reserve-open-btn');
+    const reserveModal = document.getElementById('reserve-modal');
+    const reserveClose = document.getElementById('reserve-close');
+    const reserveForm = document.getElementById('reserve-form');
+
+    function openReserveModal() {
+        if (!reserveModal) return;
+        reserveModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        const firstInput = reserveForm ? reserveForm.querySelector('input, textarea') : null;
+        if (firstInput) firstInput.focus();
+    }
+
+    function closeReserveModal() {
+        if (!reserveModal) return;
+        reserveModal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    if (reserveOpenBtn) reserveOpenBtn.addEventListener('click', openReserveModal);
+    if (reserveClose) reserveClose.addEventListener('click', closeReserveModal);
+    if (reserveModal) {
+        reserveModal.addEventListener('click', (e) => {
+            if (e.target === reserveModal) closeReserveModal();
+        });
+    }
+
+    if (reserveForm) {
+        reserveForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('reserve-name').value.trim();
+            const phone = document.getElementById('reserve-phone').value.trim();
+            const details = document.getElementById('reserve-message').value.trim();
+
+            if (!name || !details) return;
+
+            const lines = [
+                'Hello Vally Fashion! I would like to reserve a piece from the Royal Elegance Series.',
+                '',
+                `Name: ${name}`
+            ];
+            if (phone) lines.push(`Phone: ${phone}`);
+            lines.push(`Details: ${details}`);
+
+            const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join('\n'))}`;
+            reserveForm.reset();
+            closeReserveModal();
+            window.open(waUrl, '_blank', 'noopener');
+        });
+    }
 });
