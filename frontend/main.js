@@ -106,7 +106,22 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 5, src: 'products/mens-3.png', category: 'mens', title: 'Leopard Print Agbada Set', description: 'Statement two-piece set styled with traditional accents.' },
         { id: 6, src: 'products/accessories-1.png', category: 'accessories', title: 'Tribal Statement Necklace', description: 'Handcrafted statement necklace made from natural materials.' },
         { id: 7, src: 'products/accessories-2.png', category: 'accessories', title: 'Beaded Twist Necklace Set', description: 'Vibrant handmade beaded necklaces, sold as a pair.' },
-        { id: 8, src: 'products/accessories-3.png', category: 'accessories', title: 'Carved Pendant Necklace', description: 'Traditional carved wooden pendant necklace with beaded accents.' }
+        { id: 8, src: 'products/accessories-3.png', category: 'accessories', title: 'Carved Pendant Necklace', description: 'Traditional carved wooden pendant necklace with beaded accents.' },
+        { id: 9, src: 'products/vally_post_2.jpg', category: 'mens', title: 'Embroidered Velvet Agbada', description: 'Hand-embroidered velvet agbada set with matching tam, styled in gold and red.' },
+        { id: 10, src: 'products/vally_post_3.jpg', category: 'womens', title: 'Geometric Pattern Gown', description: 'Fitted gown in deep tones with bold geometric embroidery and velvet trim.' },
+        { id: 11, src: 'products/vally_post_4.jpg', category: 'womens', title: 'Sequined Asymmetric Dress', description: 'Navy and orange sequined dress with an asymmetric wrap bodice and beaded necklace.' },
+        { id: 12, src: 'products/vally_post_6.jpg', category: 'womens', title: 'Tribal Print Fringe Gown', description: 'Statement gown pairing bold tribal print with a textured fur-trim headpiece.' },
+        { id: 13, src: 'products/vally_post_7.jpg', category: 'womens', title: 'Shimmer Top Ensemble', description: 'Metallic shimmer top paired with an embroidered tiered skirt and shell necklace.' },
+        { id: 14, src: 'products/vally_post_8.jpg', category: 'mens', title: 'Leopard Band Agbada Set', description: 'Blue and red hand-embroidered agbada set styled with a leopard-print headband.' },
+        { id: 15, src: 'products/vally_post_9.jpg', category: 'mens', title: 'Royal Beaded Ceremonial Robe', description: 'Red and gold ceremonial robe with intricate beadwork and traditional headdress.' },
+        { id: 16, src: 'products/vally_post_11.jpg', category: 'mens', title: 'Monochrome Tribal Robe', description: 'Black, white and red embroidered robe styled with a layered beaded necklace.' },
+        { id: 17, src: 'products/vally_post_12.jpg', category: 'womens', title: 'Lace & Sequin Fringe Dress', description: 'Floor-length black lace dress with sequin banding and fringed sleeves.' },
+        { id: 18, src: 'products/vally_post_13.jpg', category: 'womens', title: 'Beaded Beret Tribal Gown', description: 'Tribal-print gown with intricate trim detailing, styled with a beaded beret.' },
+        { id: 19, src: 'products/vally_post_15.jpg', category: 'mens', title: 'Maroon Velvet Royal Robe', description: 'Maroon velvet robe with gold and silver embroidery, styled with a beaded necklace.' },
+        { id: 20, src: 'products/vally_post_17.jpg', category: 'womens', title: 'Beaded Mermaid Gown', description: 'Mermaid-cut gown with glass-bead embroidery and a matching crochet cap.' },
+        { id: 21, src: 'products/vally_post_19.jpg', category: 'womens', title: 'Indigo Tribal Print Gown', description: 'Indigo and cream tribal-print gown with velvet trim and fringed hem.' },
+        { id: 22, src: 'products/vally_post_21.jpg', category: 'womens', title: 'Sequined Diamond Pattern Gown', description: 'Sequined gown with diamond-pattern embroidery, styled with a beaded crochet cap.' },
+        { id: 23, src: 'products/vally_dress_post_v2.jpg', category: 'womens', title: 'Signature Embroidered Gown', description: 'Signature embroidered gown showcasing fine hand-finished detailing.' }
     ];
 
     let currentFilter = 'all';
