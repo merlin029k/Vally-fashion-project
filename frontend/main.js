@@ -237,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentLightboxImages = Array.from(visibleItems).map(img => ({ src: img.src, title: img.alt }));
                 currentImageIndex = index;
                 lastFocusedElement = item;
+                if (lightboxGetBtn) lightboxGetBtn.style.display = 'inline-flex';
                 openLightbox(currentLightboxImages[currentImageIndex]);
             };
 
@@ -325,6 +326,35 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'ArrowLeft') prevImage();
         });
     }
+
+    /* ---------- Happy Customers photo grid (click to view full-size) ---------- */
+    (function attachCustomerPhotoListeners() {
+        const customerPhotos = document.querySelectorAll('.customer-photo');
+        if (customerPhotos.length === 0) return;
+
+        const images = Array.from(customerPhotos).map((el) => {
+            const img = el.querySelector('img');
+            return { src: img.src, title: img.alt };
+        });
+
+        customerPhotos.forEach((photo, index) => {
+            const activate = () => {
+                currentLightboxImages = images;
+                currentImageIndex = index;
+                lastFocusedElement = photo;
+                if (lightboxGetBtn) lightboxGetBtn.style.display = 'none';
+                openLightbox(currentLightboxImages[currentImageIndex]);
+            };
+
+            photo.addEventListener('click', activate);
+            photo.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    activate();
+                }
+            });
+        });
+    })();
 
     /* ---------- Reservation Form (submits straight to WhatsApp) ----------
        No backend: builds a pre-filled WhatsApp message and hands off to

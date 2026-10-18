@@ -1146,6 +1146,31 @@ select:focus-visible,
   gap: 16px;
 }
 
+.customers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.customer-photo {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 3/4;
+}
+
+.customer-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.customer-photo:hover img {
+  transform: scale(1.06);
+}
+
 .gallery-item {
   position: relative;
   border-radius: 16px;
@@ -2185,6 +2210,11 @@ select:focus-visible,
     gap: 10px;
   }
 
+  .customers-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
   .hero-title {
     font-size: clamp(2.2rem, 8vw, 3.5rem);
   }
@@ -2219,6 +2249,11 @@ select:focus-visible,
   .gallery-grid {
     grid-template-columns: 1fr 1fr;
     gap: 8px;
+  }
+
+  .customers-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .gallery-item {
