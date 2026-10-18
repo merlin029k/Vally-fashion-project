@@ -158,6 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="gallery-item-overlay">
                         <div class="gallery-item-cat">${formatCategory(item.category)}</div>
                         <h3 class="gallery-item-title">${item.title}</h3>
+                        <button type="button" class="gallery-item-get-btn" data-product-title="${item.title}">
+                            <i class="fab fa-whatsapp"></i> Get Yours
+                        </button>
                     </div>
                     <div class="gallery-item-zoom">
                         <i class="fas fa-search-plus"></i>
@@ -218,9 +221,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const lightboxPrev = document.getElementById('lightbox-prev');
     const lightboxNext = document.getElementById('lightbox-next');
 
+    const lightboxGetBtn = document.getElementById('lightbox-get-btn');
+
     let currentImageIndex = 0;
     let currentLightboxImages = [];
     let lastFocusedElement = null;
+    let currentLightboxTitle = '';
 
     function attachLightboxListeners() {
         const galleryItems = document.querySelectorAll('.gallery-item');
@@ -228,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
         galleryItems.forEach((item, index) => {
             const activate = () => {
                 const visibleItems = document.querySelectorAll('.gallery-item.visible img');
-                currentLightboxImages = Array.from(visibleItems).map(img => img.src);
+                currentLightboxImages = Array.from(visibleItems).map(img => ({ src: img.src, title: img.alt }));
                 currentImageIndex = index;
                 lastFocusedElement = item;
                 openLightbox(currentLightboxImages[currentImageIndex]);
@@ -242,11 +248,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
+
+        document.querySelectorAll('.gallery-item-get-btn').forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openReserveModal(btn.dataset.productTitle);
+            });
+        });
     }
 
-    function openLightbox(src) {
+    function showLightboxImage() {
+        const current = currentLightboxImages[currentImageIndex];
+        if (!current) return;
+        lightboxImg.src = current.src;
+        lightboxImg.alt = current.title;
+        currentLightboxTitle = current.title;
+    }
+
+    function openLightbox(item) {
         if (!lightbox || !lightboxImg) return;
-        lightboxImg.src = src;
+        showLightboxImage();
         lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
         if (lightboxClose) lightboxClose.focus();
@@ -267,13 +288,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function nextImage() {
         if (currentLightboxImages.length === 0) return;
         currentImageIndex = (currentImageIndex + 1) % currentLightboxImages.length;
-        lightboxImg.src = currentLightboxImages[currentImageIndex];
+        showLightboxImage();
     }
 
     function prevImage() {
         if (currentLightboxImages.length === 0) return;
         currentImageIndex = (currentImageIndex - 1 + currentLightboxImages.length) % currentLightboxImages.length;
-        lightboxImg.src = currentLightboxImages[currentImageIndex];
+        showLightboxImage();
     }
 
     function bindActivatable(el, handler) {
@@ -291,6 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bindActivatable(lightboxClose, closeLightbox);
         bindActivatable(lightboxNext, nextImage);
         bindActivatable(lightboxPrev, prevImage);
+        bindActivatable(lightboxGetBtn, () => openReserveModal(currentLightboxTitle));
 
         lightbox.addEventListener('click', (e) => {
             if (e.target === lightbox) closeLightbox();
@@ -312,9 +334,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const reserveModal = document.getElementById('reserve-modal');
     const reserveClose = document.getElementById('reserve-close');
     const reserveForm = document.getElementById('reserve-form');
+    const reserveSubtitle = document.getElementById('reserve-subtitle');
+    const reserveMessageField = document.getElementById('reserve-message');
 
-    function openReserveModal() {
+    function openReserveModal(productTitle) {
         if (!reserveModal) return;
+        const title = typeof productTitle === 'string' ? productTitle.trim() : '';
+        reserveModal.dataset.product = title;
+
+        if (reserveSubtitle) {
+            reserveSubtitle.textContent = title
+                ? `${title} — fill this in and we'll open WhatsApp with your details ready to send.`
+                : "Royal Elegance Series — fill this in and we'll open WhatsApp with your details ready to send.";
+        }
+        if (reserveMessageField) {
+            reserveMessageField.placeholder = title
+                ? `Size, colour, and any preferences for the "${title}"?`
+                : 'Which piece, size, colour, and any preferences?';
+        }
+
         reserveModal.classList.add('active');
         document.body.style.overflow = 'hidden';
         const firstInput = reserveForm ? reserveForm.querySelector('input, textarea') : null;
@@ -327,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = '';
     }
 
-    if (reserveOpenBtn) reserveOpenBtn.addEventListener('click', openReserveModal);
+    if (reserveOpenBtn) reserveOpenBtn.addEventListener('click', () => openReserveModal());
     if (reserveClose) reserveClose.addEventListener('click', closeReserveModal);
     if (reserveModal) {
         reserveModal.addEventListener('click', (e) => {
@@ -345,8 +383,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!name || !details) return;
 
+            const productTitle = reserveModal.dataset.product || '';
             const lines = [
-                'Hello Vally Fashion! I would like to reserve a piece from the Royal Elegance Series.',
+                productTitle
+                    ? `Hello Vally Fashion! I would like to reserve the "${productTitle}".`
+                    : 'Hello Vally Fashion! I would like to reserve a piece from the Royal Elegance Series.',
                 '',
                 `Name: ${name}`
             ];
